@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowUp, ArrowUpRight, Check, Copy, Github } from 'lucide-react'
 import { profile } from '../content'
+import Logo from './Logo'
 
 export default function Contact() {
   const [copied, setCopied] = useState(false)
@@ -34,8 +35,28 @@ export default function Contact() {
             <br />
             in <em>mind?</em>
           </span>
-          <span className="contact-arrow">
-            <ArrowUpRight strokeWidth={1.25} />
+          <span className="contact-arrow" aria-hidden="true">
+            <svg viewBox="0 0 160 160">
+              <defs>
+                <path
+                  id="contact-badge-circle"
+                  d="M80,80 m-60,0 a60,60 0 1,1 120,0 a60,60 0 1,1 -120,0"
+                />
+              </defs>
+              <circle className="contact-badge-bg" cx="80" cy="80" r="78" />
+              <g className="contact-badge-text">
+                <text>
+                  <textPath href="#contact-badge-circle">
+                    OPEN TO CONVERSATION ✦ FULL STACK ✦
+                  </textPath>
+                </text>
+              </g>
+              <circle className="contact-badge-core" cx="80" cy="80" r="34" />
+              <path
+                className="contact-badge-arrow"
+                d="M68 92 92 68M72 68h20v20"
+              />
+            </svg>
           </span>
           <span className="sr-only">
             {profile.email
@@ -102,12 +123,11 @@ export default function Contact() {
         </div>
         <div className="footer-line">
           <a
-            className="wordmark"
+            className="footer-logo"
             href="#top"
             aria-label="Mossab Laribi, back to top"
           >
-            m<span>l</span>
-            <i />
+            <Logo size={34} />
           </a>
           <span className="mono">
             © {new Date().getFullYear()} MOSSAB LARIBI

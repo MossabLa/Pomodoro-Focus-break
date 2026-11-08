@@ -42,6 +42,55 @@ const traceLabels = [
   'Response → interface',
   'Request complete. Every layer connected.',
 ]
+// Vertical centre of each plate in the SVG, used to move the trace packet.
+const plateY: Record<LayerId, number> = {
+  interface: 140,
+  logic: 300,
+  data: 460,
+}
+// Maps an isometric plate's flat 230×230 drawing space onto its top face.
+const iso = (top: number) => `matrix(0.8696 0.5 -0.8696 0.5 300 ${top})`
+
+function Plate({
+  id,
+  cy,
+  active,
+  children,
+}: {
+  id: LayerId
+  cy: number
+  active: boolean
+  children: React.ReactNode
+}) {
+  const layer = layers.find((item) => item.id === id)!
+  return (
+    <g className={`stack-plate stack-plate-${id}${active ? ' is-active' : ''}`}>
+      <g className="stack-plate-body">
+        <polygon
+          className="plate-side-left"
+          points={`100,${cy} 300,${cy + 115} 300,${cy + 129} 100,${cy + 14}`}
+        />
+        <polygon
+          className="plate-side-right"
+          points={`300,${cy + 115} 500,${cy} 500,${cy + 14} 300,${cy + 129}`}
+        />
+        <polygon
+          className="plate-face"
+          points={`300,${cy - 115} 500,${cy} 300,${cy + 115} 100,${cy}`}
+        />
+        <g transform={iso(cy - 115)}>{children}</g>
+      </g>
+      <line className="plate-leader" x1="508" y1={cy} x2="552" y2={cy} />
+      <circle className="plate-leader-dot" cx="556" cy={cy} r="3.5" />
+      <text className="plate-number" x="568" y={cy - 6}>
+        {layer.number}
+      </text>
+      <text className="plate-label" x="568" y={cy + 11}>
+        {layer.title.toUpperCase()}
+      </text>
+    </g>
+  )
+}
 
 export default function SignatureScene() {
   const [activeLayer, setActiveLayer] = useState<LayerId>('interface')
@@ -93,8 +142,8 @@ export default function SignatureScene() {
     )
       return
     const bounds = event.currentTarget.getBoundingClientRect()
-    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 6
-    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * -6
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 8
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * -8
     if (pointerFrame.current !== null)
       cancelAnimationFrame(pointerFrame.current)
     pointerFrame.current = requestAnimationFrame(() => {
@@ -116,16 +165,19 @@ export default function SignatureScene() {
     setActiveLayer(id)
   }
 
+  const packetY = plateY[activeLayer] - plateY.interface
+
   return (
     <div
       className="scene"
+      role="group"
       aria-label="Interactive software architecture illustration"
     >
       <div className="scene-heading">
         <span>
           <i /> INTERACTIVE SYSTEM
         </span>
-        <span>FIG. 01</span>
+        <span>FIG. 01 — EXPLODED VIEW</span>
       </div>
       <div
         className={`scene-visual${isTracing ? ' scene-is-tracing' : ''}`}
@@ -133,263 +185,193 @@ export default function SignatureScene() {
         onPointerLeave={resetScene}
         ref={visualRef}
       >
-        <div
-          className="scene-coordinate scene-coordinate-top"
-          aria-hidden="true"
-        >
-          X: 032 / Y: 064
-        </div>
         <svg
           className="scene-diagram"
-          viewBox="0 0 540 460"
+          viewBox="0 0 680 620"
           fill="none"
           aria-hidden="true"
         >
           <defs>
             <pattern
-              id="scene-grid"
-              width="24"
-              height="24"
+              id="scene-cells"
+              width="32"
+              height="32"
               patternUnits="userSpaceOnUse"
             >
-              <path
-                d="M24 0H0V24"
+              <rect
+                x="5"
+                y="5"
+                width="22"
+                height="22"
+                rx="3"
                 fill="none"
-                stroke="currentColor"
-                strokeWidth="0.45"
-                opacity=".16"
+                stroke="#1c1f1b"
+                strokeWidth="1.1"
               />
             </pattern>
             <pattern
               id="scene-dots"
-              width="14"
-              height="14"
+              width="16"
+              height="16"
               patternUnits="userSpaceOnUse"
             >
-              <circle cx="1" cy="1" r=".7" fill="currentColor" opacity=".24" />
+              <circle cx="2" cy="2" r="1.1" fill="#1c1f1b" opacity=".22" />
             </pattern>
           </defs>
-          <path
-            className="scene-ground"
-            d="M40 324 270 195 500 324 270 453Z"
-            fill="url(#scene-grid)"
+          <rect width="680" height="620" fill="url(#scene-dots)" />
+          <ellipse
+            className="scene-orbit"
+            cx="300"
+            cy="320"
+            rx="290"
+            ry="168"
           />
           <path
-            d="M110 150V325M270 60V235M430 150V325"
-            stroke="currentColor"
-            strokeOpacity=".28"
-            strokeWidth=".8"
-            strokeDasharray="3 6"
+            className="scene-crosshair"
+            d="M12 22h16M20 14v16M640 590h16M648 582v16M640 22h16M648 14v16"
           />
-          <g
-            className={`scene-layer scene-layer-data${activeLayer === 'data' ? ' scene-layer-active' : ''}`}
-          >
-            <path
-              d="m110 302 160 90 160-90v14l-160 90-160-90Z"
-              fill="#171c18"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <path
-              d="m270 212 160 90-160 90-160-90Z"
-              fill="#303b33"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <path d="m270 212 160 90-160 90-160-90Z" fill="url(#scene-dots)" />
-            <g transform="matrix(.83 .467 -.83 .467 270 249)">
-              <rect
-                x="0"
-                y="0"
-                width="121"
-                height="92"
-                rx="4"
-                fill="#3a473e"
-                stroke="#94a194"
-                strokeWidth="1"
-              />
-              <path
-                d="M0 25h121M0 47h121M0 69h121M36 25v67"
-                stroke="#94a194"
-                strokeWidth=".8"
-              />
-              <path
-                d="M11 13h22M47 13h37M49 36h49M49 58h36M49 80h45"
-                stroke="#b8c2b5"
-                strokeWidth="2"
-              />
-              <circle cx="17" cy="36" r="3" fill="#f15a30" />
-              <circle cx="17" cy="58" r="3" fill="#b8c2b5" />
-              <circle cx="17" cy="80" r="3" fill="#b8c2b5" />
-            </g>
-            <path
-              d="m421 321 36 20h34"
-              stroke="currentColor"
-              strokeWidth=".7"
-            />
-            <text x="496" y="345" className="scene-svg-number">
-              03
-            </text>
-          </g>
-          <g
-            className={`scene-layer scene-layer-logic${activeLayer === 'logic' ? ' scene-layer-active' : ''}`}
-          >
-            <path
-              d="m110 226 160 90 160-90v14l-160 90-160-90Z"
-              fill="#d4d3c6"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <path
-              d="m270 136 160 90-160 90-160-90Z"
-              fill="#e4e4d7"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <g transform="matrix(.83 .467 -.83 .467 270 167)">
-              <rect
-                x="0"
-                y="0"
-                width="132"
-                height="115"
-                rx="3"
-                stroke="#62695c"
-                strokeWidth="1"
-              />
-              <path d="M0 22h132" stroke="#62695c" strokeWidth=".8" />
-              <circle cx="10" cy="11" r="2.5" fill="#62695c" />
-              <circle cx="19" cy="11" r="2.5" fill="#62695c" opacity=".5" />
-              <circle cx="28" cy="11" r="2.5" fill="#62695c" opacity=".3" />
-              <path
-                d="M16 39h33M25 52h70M25 65h51M25 78h66M16 91h33"
-                stroke="#62695c"
-                strokeWidth="3"
-              />
-              <path
-                d="M59 39h42M103 52h12M84 65h25"
-                stroke="#f15a30"
-                strokeWidth="3"
-              />
-            </g>
-            <path
-              d="m421 245 36 20h34"
-              stroke="currentColor"
-              strokeWidth=".7"
-            />
-            <text x="496" y="269" className="scene-svg-number">
-              02
-            </text>
-          </g>
-          <g
-            className={`scene-layer scene-layer-interface${activeLayer === 'interface' ? ' scene-layer-active' : ''}`}
-          >
-            <path
-              d="m110 150 160 90 160-90v14l-160 90-160-90Z"
-              fill="#ca4625"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <path
-              d="m270 60 160 90-160 90-160-90Z"
-              fill="#f15a30"
-              stroke="#20231f"
-              strokeWidth="1"
-            />
-            <g transform="matrix(.83 .467 -.83 .467 270 89)">
-              <rect
-                width="140"
-                height="118"
-                rx="4"
-                fill="#f5b493"
-                stroke="#46291f"
-                strokeWidth="1"
-              />
-              <path d="M0 22h140" stroke="#46291f" strokeWidth="1" />
-              <circle cx="11" cy="11" r="2.5" fill="#46291f" />
-              <circle cx="21" cy="11" r="2.5" fill="#46291f" opacity=".55" />
-              <circle cx="31" cy="11" r="2.5" fill="#46291f" opacity=".3" />
-              <rect
-                x="11"
-                y="34"
-                width="48"
-                height="71"
-                rx="2"
-                fill="#f16b43"
-              />
-              <path d="M69 40h53M69 48h39" stroke="#46291f" strokeWidth="4" />
-              <path
-                d="M69 63h53M69 69h47M69 75h50"
-                stroke="#88543e"
-                strokeWidth="2"
-              />
-              <rect
-                x="69"
-                y="88"
-                width="36"
-                height="15"
-                rx="2"
-                fill="#46291f"
-              />
-              <path
-                d="m24 62 9 9-9 9m22-18-9 18"
-                stroke="#46291f"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </g>
-            <path
-              d="m421 169 36 20h34"
-              stroke="currentColor"
-              strokeWidth=".7"
-            />
-            <text x="496" y="193" className="scene-svg-number">
-              01
-            </text>
-          </g>
-          <path
-            d="M80 176v147"
-            stroke="#20231f"
-            strokeWidth=".8"
-            strokeDasharray="2 5"
-            opacity=".45"
+
+          <line className="scene-beam" x1="100" y1="154" x2="100" y2="460" />
+          <line className="scene-beam" x1="500" y1="154" x2="500" y2="460" />
+          <circle
+            className="scene-ambient scene-ambient-down"
+            cx="500"
+            cy="154"
+            r="5"
           />
-          {[0, 1, 2].map((step) => (
-            <circle
-              key={step}
-              cx="80"
-              cy={176 + step * 76}
-              r="3"
-              fill={layers[step].id === activeLayer ? '#f15a30' : '#f3f1e9'}
-              stroke={layers[step].id === activeLayer ? '#f15a30' : '#899083'}
-              strokeWidth="1"
+          <circle
+            className="scene-ambient scene-ambient-up"
+            cx="100"
+            cy="460"
+            r="5"
+          />
+
+          <Plate id="data" cy={460} active={activeLayer === 'data'}>
+            <rect
+              x="15"
+              y="15"
+              width="200"
+              height="200"
+              fill="url(#scene-cells)"
             />
-          ))}
+            <rect
+              className="cell cell-a blink-1"
+              x="52"
+              y="52"
+              width="22"
+              height="22"
+              rx="3"
+            />
+            <rect
+              className="cell cell-b blink-2"
+              x="116"
+              y="84"
+              width="22"
+              height="22"
+              rx="3"
+            />
+            <rect
+              className="cell cell-a blink-3"
+              x="148"
+              y="148"
+              width="22"
+              height="22"
+              rx="3"
+            />
+            <rect
+              className="cell cell-b blink-1"
+              x="84"
+              y="180"
+              width="22"
+              height="22"
+              rx="3"
+            />
+          </Plate>
+
+          <Plate id="logic" cy={300} active={activeLayer === 'logic'}>
+            <path
+              className="logic-links"
+              d="M50 60 115 115M170 50 115 115M55 180 115 115M180 175 115 115M50 60 170 50M55 180 180 175"
+            />
+            <circle className="logic-core" cx="115" cy="115" r="20" />
+            <circle className="logic-pulse" cx="115" cy="115" r="20" />
+            <circle className="logic-node" cx="50" cy="60" r="11" />
+            <circle className="logic-node" cx="170" cy="50" r="11" />
+            <circle className="logic-node" cx="55" cy="180" r="11" />
+            <circle className="logic-node is-filled" cx="180" cy="175" r="11" />
+          </Plate>
+
+          <Plate id="interface" cy={140} active={activeLayer === 'interface'}>
+            <rect
+              className="ui-line"
+              x="20"
+              y="20"
+              width="190"
+              height="190"
+              rx="12"
+            />
+            <line className="ui-line" x1="20" y1="46" x2="210" y2="46" />
+            <circle className="ui-accent" cx="34" cy="33" r="3.5" />
+            <circle className="ui-ink" cx="46" cy="33" r="3.5" />
+            <circle className="ui-ink" cx="58" cy="33" r="3.5" opacity=".4" />
+            <circle className="ui-accent ui-avatar" cx="66" cy="96" r="24" />
+            <rect
+              className="ui-ink"
+              x="104"
+              y="80"
+              width="84"
+              height="9"
+              rx="4.5"
+            />
+            <rect
+              className="ui-ink"
+              x="104"
+              y="97"
+              width="62"
+              height="7"
+              rx="3.5"
+              opacity=".35"
+            />
+            <rect
+              className="ui-ink"
+              x="104"
+              y="110"
+              width="72"
+              height="7"
+              rx="3.5"
+              opacity=".35"
+            />
+            <rect
+              className="ui-line"
+              x="36"
+              y="144"
+              width="74"
+              height="48"
+              rx="7"
+            />
+            <rect
+              className="ui-ink"
+              x="120"
+              y="144"
+              width="74"
+              height="48"
+              rx="7"
+            />
+          </Plate>
+
           {isTracing && (
             <circle
               className="scene-packet"
-              cx="80"
-              cy="176"
-              r="5"
-              fill="#f15a30"
-              style={
-                {
-                  '--packet-y': `${traceStep === 1 ? 76 : traceStep === 2 ? 152 : 0}px`,
-                } as CSSProperties
-              }
+              cx="500"
+              cy={plateY.interface}
+              r="7"
+              style={{ '--packet-y': `${packetY}px` } as CSSProperties}
             />
           )}
-          <path
-            d="M45 47h13M51.5 40.5v13M480 395h13M486.5 388.5v13"
-            stroke="#8c9186"
-            strokeWidth=".8"
-          />
-          <text x="40" y="427" className="scene-svg-micro">
+          <text className="scene-svg-micro" x="24" y="604">
             FORM FOLLOWS FUNCTION.
           </text>
         </svg>
-        <span className="scene-visual-note" aria-hidden="true">
-          THREE LAYERS. ONE EXPERIENCE.
-        </span>
       </div>
       <div
         className="scene-controls"
@@ -414,7 +396,7 @@ export default function SignatureScene() {
           <p className="scene-detail-title">{active.description}</p>
           <p className="scene-detail-copy">{active.detail}</p>
         </div>
-        <ArrowUpRight size={19} strokeWidth={1.3} aria-hidden="true" />
+        <ArrowUpRight size={20} strokeWidth={1.5} aria-hidden="true" />
       </div>
       <div className="scene-trace-row">
         <button
@@ -424,9 +406,9 @@ export default function SignatureScene() {
           onClick={() => setIsTracing(true)}
         >
           {traceStep === 4 ? (
-            <RotateCcw size={12} aria-hidden="true" />
+            <RotateCcw size={14} aria-hidden="true" />
           ) : (
-            <Play size={11} fill="currentColor" aria-hidden="true" />
+            <Play size={13} fill="currentColor" aria-hidden="true" />
           )}
           {isTracing
             ? 'Tracing request'

@@ -242,7 +242,18 @@ export default function Practice() {
                     <span key={step}>
                       <i aria-hidden="true" />
                       {step}
-                      {stepIndex < 2 && <b aria-hidden="true">⟶</b>}
+                      {stepIndex < 2 && (
+                        <svg
+                          className="practice-flow-arrow"
+                          width="56"
+                          height="12"
+                          viewBox="0 0 56 12"
+                          aria-hidden="true"
+                        >
+                          <line x1="0" y1="6" x2="48" y2="6" />
+                          <path d="M46 1l6 5-6 5" />
+                        </svg>
+                      )}
                     </span>
                   ))}
                 </div>
@@ -279,6 +290,21 @@ export default function Practice() {
             </p>
           </div>
         </div>
+        <svg
+          className="practice-thread"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            className="practice-thread-base"
+            d="M0 60 C 150 0, 250 120, 400 60 S 650 0, 800 60 S 1050 120, 1200 60"
+          />
+          <path
+            className="practice-thread-draw"
+            d="M0 60 C 150 0, 250 120, 400 60 S 650 0, 800 60 S 1050 120, 1200 60"
+          />
+        </svg>
         <ol className="practice-journey-list">
           {journey.map((step) => (
             <li className="reveal" key={step.number}>

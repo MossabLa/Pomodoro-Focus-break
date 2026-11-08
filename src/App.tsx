@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowDownRight, ArrowUpRight, Menu, X } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Menu, X } from 'lucide-react'
 import { profile, projects } from './content'
 import type { Project } from './content'
 import SignatureScene from './components/SignatureScene'
@@ -8,7 +8,21 @@ import ProjectArtwork from './components/ProjectArtwork'
 import ProjectDialog from './components/ProjectDialog'
 import Contact from './components/Contact'
 import Pointer from './components/Pointer'
+import Logo from './components/Logo'
 import { useMotion } from './hooks/useMotion'
+
+const marqueeItems = [
+  'React',
+  'TypeScript',
+  'Node.js',
+  'NestJS',
+  'PostgreSQL',
+  'Prisma',
+  'Docker',
+  'Clean Architecture',
+  'REST APIs',
+  'Web Audio',
+]
 
 function Navigation() {
   const [open, setOpen] = useState(false)
@@ -39,12 +53,9 @@ function Navigation() {
   return (
     <header className="site-header section-shell">
       <a className="brand" href="#top" aria-label="Mossab Laribi, home">
-        <span className="wordmark">
-          m<span>l</span>
-          <i />
-        </span>
+        <Logo />
         <span className="brand-name">
-          Mossab Laribi<span>INDEPENDENT THINKING. FULL STACK BUILDING.</span>
+          Mossab Laribi<span>FULL STACK · INSIDE OUT</span>
         </span>
       </a>
       <button
@@ -67,7 +78,7 @@ function Navigation() {
           Work <sup>03</sup>
         </a>
         <a href="#about" onClick={() => setOpen(false)}>
-          About
+          Approach
         </a>
         <a href="#expertise" onClick={() => setOpen(false)}>
           The stack
@@ -93,10 +104,8 @@ function MagneticLink({
   href: string
   className: string
 }) {
-  const ref = useRef<HTMLAnchorElement>(null)
   return (
     <a
-      ref={ref}
       href={href}
       className={className}
       onPointerMove={(event) => {
@@ -107,7 +116,7 @@ function MagneticLink({
         )
           return
         const rect = event.currentTarget.getBoundingClientRect()
-        event.currentTarget.style.transform = `translate(${(event.clientX - rect.left - rect.width / 2) * 0.09}px, ${(event.clientY - rect.top - rect.height / 2) * 0.15}px)`
+        event.currentTarget.style.transform = `translate(${(event.clientX - rect.left - rect.width / 2) * 0.12}px, ${(event.clientY - rect.top - rect.height / 2) * 0.2}px)`
       }}
       onPointerLeave={(event) => {
         event.currentTarget.style.transform = ''
@@ -115,6 +124,49 @@ function MagneticLink({
     >
       {children}
     </a>
+  )
+}
+
+function Marquee() {
+  const items = [...marqueeItems, ...marqueeItems]
+  return (
+    <div className="marquee-frame" aria-hidden="true">
+      <div className="marquee">
+        <div className="marquee-track">
+          {items.map((item, index) => (
+            <span key={`${item}-${index}`}>
+              {item}
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path d="M12 0c.8 6.4 5.6 11.2 12 12-6.4.8-11.2 5.6-12 12-.8-6.4-5.6-11.2-12-12C6.4 11.2 11.2 6.4 12 0z" />
+              </svg>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function HeadlineMark() {
+  return (
+    <svg className="headline-mark" viewBox="0 0 120 120" aria-hidden="true">
+      <circle
+        className="headline-mark-ring"
+        cx="60"
+        cy="60"
+        r="56"
+        fill="none"
+        strokeWidth="2"
+        strokeDasharray="3 7"
+      />
+      <path
+        d="M38 82 82 38M46 38h36v36"
+        fill="none"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 
@@ -132,9 +184,13 @@ export default function App() {
         <section className="hero section-shell" aria-labelledby="hero-title">
           <div className="hero-eyebrow">
             <span className="section-kicker">
-              <span className="small-dot" /> {profile.role.toUpperCase()}
+              <span className="small-dot is-live" />{' '}
+              {profile.role.toUpperCase()}
             </span>
-            <span className="mono hero-edition">PORTFOLIO / VOL. 01</span>
+            <span className="mono hero-edition">PORTFOLIO / VOL. 02</span>
+            <span className="mono hero-edition hero-axis">
+              INTERFACE ↔ SYSTEM ↔ DATA
+            </span>
           </div>
           <div className="hero-grid">
             <div className="hero-copy">
@@ -146,19 +202,15 @@ export default function App() {
                   <span>the inside</span>
                 </span>
                 <span className="hero-line">
-                  <span>
+                  <span className="hero-line-last">
                     <em>out.</em>
-                    <ArrowUpRight
-                      className="headline-arrow"
-                      strokeWidth={1.2}
-                      aria-hidden="true"
-                    />
+                    <HeadlineMark />
                   </span>
                 </span>
               </h1>
               <p className="hero-description">
-                Thoughtful interfaces. Solid foundations.
-                <br />I connect the details you see to the systems you don’t.
+                Thoughtful interfaces. Solid foundations. I connect the details
+                you see to the systems you don’t.
               </p>
               <div className="hero-actions">
                 <MagneticLink href="#work" className="primary-button">
@@ -175,14 +227,32 @@ export default function App() {
           </div>
           <div className="hero-foot">
             <a href="#work" className="scroll-hint">
-              <span className="scroll-line" />
+              <svg
+                width="22"
+                height="34"
+                viewBox="0 0 22 34"
+                aria-hidden="true"
+              >
+                <rect
+                  x="1"
+                  y="1"
+                  width="20"
+                  height="32"
+                  rx="10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                />
+                <circle className="scroll-wheel" cx="11" cy="10" r="2.5" />
+              </svg>
               <span>SCROLL TO EXPLORE</span>
-              <ArrowDown size={13} />
             </a>
             <span className="hero-foot-center">CRAFT AT EVERY LAYER.</span>
             <span className="mono">DESIGN ↔ ENGINEERING</span>
           </div>
         </section>
+
+        <Marquee />
 
         <section
           id="work"
@@ -201,9 +271,8 @@ export default function App() {
             </h2>
             <div>
               <p>
-                Three explorations at the intersection
-                <br className="desktop-br" /> of utility, clarity, and a little
-                curiosity.
+                Three explorations at the intersection of utility, clarity, and
+                a little curiosity.
               </p>
               <span className="sample-note">
                 <span className="small-dot" /> Original demo projects — not
@@ -224,32 +293,35 @@ export default function App() {
                   data-cursor="EXPLORE ↗"
                 >
                   <ProjectArtwork kind={project.kind} />
-                  <span className="project-overlay">
+                  <span className="project-overlay" aria-hidden="true">
                     <span>EXPLORE THE CONCEPT</span>
-                    <ArrowUpRight size={22} />
+                    <ArrowUpRight size={18} />
                   </span>
-                  <span className="project-number">/{project.number}</span>
                 </button>
                 <div className="project-info">
-                  <div className="project-title-row">
-                    <span className="mono project-index">{project.number}</span>
-                    <div>
+                  <div className="project-text">
+                    <span className="mono project-category">
+                      {project.number} — {project.category}
+                    </span>
+                    <h3>
                       <button
                         className="project-name"
                         onClick={() => setActiveProject(project)}
                       >
-                        {project.name} <ArrowUpRight />
+                        {project.name}
                       </button>
-                      <p>{project.subtitle}</p>
-                    </div>
+                    </h3>
+                    <p>{project.subtitle}</p>
                   </div>
-                  <div className="project-tags">
-                    <span className="mono">{project.category}</span>
-                    <div>
+                  <div className="project-meta">
+                    <ul className="project-tags" aria-label="Built with">
                       {project.stack.map((tech) => (
-                        <span key={tech}>{tech}</span>
+                        <li key={tech}>{tech}</li>
                       ))}
-                    </div>
+                    </ul>
+                    <span className="project-cta" aria-hidden="true">
+                      <ArrowUpRight strokeWidth={1.6} />
+                    </span>
                   </div>
                 </div>
               </article>
