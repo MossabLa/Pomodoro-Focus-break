@@ -1,34 +1,48 @@
-🕒 Pomodoro Focus Timer
+# Mossab Laribi — The Working Blueprint
 
-Pomodoro Focus Timer est une application de chronomètre basée sur la technique du Pomodoro.
-Elle alterne automatiquement entre des sessions de focus (travail) et des sessions de repos, avec des durées entièrement personnalisables.
+An editorial developer portfolio built with React, TypeScript, Vite, GSAP, and locally hosted fonts. Warm ivory, ink, and signal orange connect an interactive software architecture illustration to three original, working project demonstrations.
 
-✨ Fonctionnalités principales
+## Run locally
 
-Définir la durée du focus et du repos (ex. 30 min focus / 5 min repos)
+Use Node.js 22.12+ (tested with Node.js 24) and npm.
 
-Enchaînement automatique : à la fin d’un focus, le repos démarre tout seul (et inversement)
+```sh
+npm ci
+npm run dev
+```
 
-Possibilité d’ajouter un long repos après un certain nombre de cycles
+## Build and verify
 
-Boutons Start / Pause / Reset / Skip
+```sh
+npm run build
+npm run preview
+npm run test:e2e
+```
 
-Notifications bureau et alerte sonore à la fin de chaque session
+The production build is written to `dist/`, ready for static hosting. No backend, environment variables, API keys, remote fonts, or analytics are required. The Playwright configuration uses `/usr/bin/chromium` when available; otherwise install Playwright's browser with `npx playwright install chromium`. The test runner starts Vite automatically when needed.
 
-Interface simple, claire et réactive (design moderne avec Tailwind CSS)
+## Content and customization
 
-Sauvegarde locale des paramètres (localStorage)
+- `src/content.ts`: name, GitHub, optional email/LinkedIn, project descriptions and technical details.
+- `src/components/Practice.tsx`: editable engineering philosophy, technical disciplines, and journey. The journey is explicitly a draft framework, not an employment record.
+- `src/styles.css`: palette, typography, layout, responsive states, and project artwork.
+- `src/components/SignatureScene.tsx`: interactive Interface → Logic → Data conceptual model.
+- `src/components/ProjectDemo.tsx`: lazy-loaded, functional browser demonstrations.
+- `src/hooks/useMotion.ts`: scoped introduction, scroll reveals, and parallax with cleanup.
+- `index.html`: page title and social/search descriptions. Set deployment-specific canonical/social URLs only when the actual domain is known.
 
-💻 Technologies utilisées
+Email and LinkedIn remain `null` until supplied. Their empty states are explicit; the contact CTA leads to the supplied GitHub profile. There are no fictional employers, clients, outcomes, or testimonials.
 
-React (Vite)
+## Working demonstrations
 
-Tailwind CSS
+1. **Still.** — focus/short-break timer with timestamp-based timing, pause/reset, and optional completion sound.
+2. **Atlas** — interactive chart with two time ranges and explicitly simulated data. No infrastructure is connected.
+3. **Forma** — task creation, editing, completion, filtering, deletion, and browser persistence. Local data stays in this browser and is not sent to a server.
 
-JavaScript / HTML / CSS
+Project previews open keyboard-accessible native dialogs with case studies and working demos. Projects are labeled as demonstrations, not client work. Their source is part of this repository.
 
-GitHub Codespaces (environnement de développement en ligne)
+## Interaction and accessibility
 
-📦 Objectif futur
+Native anchor navigation and scrolling, visible focus states, a skip link, keyboard-operable tabs, native dialog focus management, touch layouts, reduced-motion support, and no scroll hijacking. Animation contexts, event listeners, and timers are cleaned up. Expensive interactive demos load on demand. Fonts and artwork are served locally.
 
-Une fois stable et testé, le projet pourra être converti en application de bureau pour Windows 10 via Tauri ou Electron.
+The original repository's Pomodoro notes are preserved in `docs/original-pomodoro-notes.md`.
