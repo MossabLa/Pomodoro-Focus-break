@@ -1,30 +1,35 @@
 .scene {
   position: relative;
   width: 100%;
-  color: var(--ink);
+  color: var(--text);
+  border: 1px solid var(--line);
+  background: var(--panel);
 }
 .scene-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--muted);
 }
 .scene-heading > span:first-child {
   display: flex;
   gap: 10px;
   align-items: center;
+  color: var(--text);
 }
 .scene-heading i {
   display: block;
   width: 7px;
   height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: scene-blink 2.2s ease-in-out infinite;
+  background: var(--signal);
+  box-shadow: 0 0 8px var(--signal-glow);
+  animation: scene-blink 1.6s ease-in-out infinite;
 }
 
 /* ---------- visual ---------- */
@@ -32,7 +37,7 @@
   position: relative;
   perspective: 1100px;
   touch-action: pan-y;
-  margin: 4px -8px 0;
+  padding: 8px;
   --scene-rx: 0deg;
   --scene-ry: 0deg;
 }
@@ -47,29 +52,31 @@
 .scene-diagram * {
   transform-box: view-box;
 }
-.scene-orbit {
+.scene-radar {
   fill: none;
-  stroke: var(--ink);
-  stroke-opacity: 0.25;
-  stroke-dasharray: 2 8;
-  animation: scene-dash 9s linear infinite;
+  stroke: var(--signal);
+  stroke-opacity: 0.16;
+}
+.scene-sweep {
+  transform-origin: 300px 310px;
+  animation: scene-spin 6s linear infinite;
 }
 .scene-crosshair {
-  stroke: var(--ink);
-  stroke-width: 1.2;
+  stroke: var(--signal);
+  stroke-width: 2;
 }
 .scene-beam {
-  stroke: var(--ink);
+  stroke: var(--line-strong);
   stroke-width: 1.2;
   stroke-dasharray: 4 6;
   animation: scene-dash 1.6s linear infinite;
 }
 .scene-ambient-down {
-  fill: var(--accent);
+  fill: var(--signal);
   animation: scene-down 3.2s cubic-bezier(0.6, 0, 0.4, 1) infinite;
 }
 .scene-ambient-up {
-  fill: var(--ink);
+  fill: var(--hot);
   animation: scene-up 3.2s cubic-bezier(0.6, 0, 0.4, 1) -1.6s infinite;
 }
 .scene-is-tracing .scene-ambient {
@@ -77,61 +84,50 @@
   animation: none;
 }
 
-/* ---------- plates ---------- */
+/* ---------- plates: glowing wireframes ---------- */
 .stack-plate-body {
+  filter: url(#scene-glow);
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .stack-plate-interface {
+  --plate: var(--text);
   animation: scene-float 6s ease-in-out infinite;
 }
 .stack-plate-logic {
+  --plate: var(--signal);
   animation: scene-float 6s ease-in-out -2s infinite;
 }
 .stack-plate-data {
+  --plate: var(--hot);
   animation: scene-float 6s ease-in-out -4s infinite;
 }
 .stack-plate.is-active .stack-plate-body {
   transform: translateX(-14px);
 }
 .plate-face {
-  stroke: var(--ink);
-  stroke-width: 1.5;
-  transition:
-    stroke 0.3s,
-    stroke-width 0.3s;
+  fill: rgb(10 12 9 / 0.78);
+  stroke: var(--plate);
+  stroke-width: 1.6;
+  transition: stroke-width 0.3s;
 }
 .stack-plate.is-active .plate-face {
-  stroke: var(--accent);
-  stroke-width: 2.5;
+  stroke-width: 2.6;
 }
-.plate-side-left {
-  fill: #3a3d36;
-}
+.plate-side-left,
 .plate-side-right {
-  fill: var(--ink);
-}
-.stack-plate-interface .plate-face {
-  fill: var(--paper-hi);
-}
-.stack-plate-logic .plate-face {
-  fill: var(--ink);
-}
-.stack-plate-logic .plate-side-right {
-  fill: #0f110e;
-}
-.stack-plate-data .plate-face {
-  fill: #e6e2d4;
+  fill: none;
+  stroke: var(--plate);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
 }
 .plate-leader {
-  stroke: var(--ink);
+  stroke: var(--line-strong);
   stroke-width: 1;
   transition: stroke 0.3s;
 }
 .plate-leader-dot {
-  fill: var(--ink);
-  transition:
-    fill 0.3s,
-    r 0.3s;
+  fill: var(--line-strong);
+  transition: fill 0.3s;
 }
 .plate-number {
   font: 11px var(--mono);
@@ -141,67 +137,69 @@
 .plate-label {
   font: 500 12px var(--mono);
   letter-spacing: 0.1em;
-  fill: var(--ink);
+  fill: var(--text-soft);
   transition: fill 0.3s;
 }
 .stack-plate.is-active .plate-leader {
-  stroke: var(--accent);
+  stroke: var(--plate);
 }
-.stack-plate.is-active .plate-leader-dot {
-  fill: var(--accent);
-  r: 5px;
-}
+.stack-plate.is-active .plate-leader-dot,
 .stack-plate.is-active .plate-label {
-  fill: var(--accent-deep);
+  fill: var(--plate);
 }
 
-/* plate contents */
+/* plate contents, drawn as line work */
 .ui-line {
   fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.6;
+  stroke: var(--text);
+  stroke-width: 1.4;
 }
 .ui-ink {
-  fill: var(--ink);
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.2;
 }
 .ui-accent {
-  fill: var(--accent);
+  fill: var(--signal);
 }
 .ui-avatar {
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 2;
   transform-box: fill-box;
   transform-origin: center;
   animation: scene-breathe 4s ease-in-out infinite;
 }
 .logic-links {
-  stroke: var(--paper);
+  stroke: var(--signal);
   stroke-width: 1.4;
   stroke-dasharray: 4 6;
   animation: scene-dash 1.6s linear infinite;
 }
 .logic-core {
-  fill: var(--accent);
+  fill: var(--signal);
 }
 .logic-pulse {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--signal);
   stroke-width: 2;
   transform-box: fill-box;
   transform-origin: center;
   animation: scene-pulse 2.4s ease-out infinite;
 }
 .logic-node {
-  fill: var(--ink);
-  stroke: var(--paper);
+  fill: var(--bg);
+  stroke: var(--signal);
   stroke-width: 1.6;
 }
 .logic-node.is-filled {
-  fill: var(--paper);
+  fill: var(--signal);
 }
 .cell-a {
-  fill: var(--accent);
+  fill: var(--hot);
 }
 .cell-b {
-  fill: var(--ink);
+  fill: var(--signal);
 }
 .blink-1 {
   animation: scene-blink 2.2s ease-in-out infinite;
@@ -213,12 +211,12 @@
   animation: scene-blink 2.2s ease-in-out -1.4s infinite;
 }
 .scene-packet {
-  fill: var(--accent);
-  stroke: var(--paper);
+  fill: var(--signal);
+  stroke: var(--bg);
   stroke-width: 2;
   transform: translateY(var(--packet-y));
   transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
-  filter: drop-shadow(0 0 6px rgb(232 83 42 / 0.7));
+  filter: drop-shadow(0 0 8px rgb(200 255 46 / 0.9));
 }
 .scene-svg-micro {
   font: 10px var(--mono);
@@ -230,88 +228,86 @@
 .scene-controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  padding: 6px;
-  margin-top: 18px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
+  border-top: 1px solid var(--line);
 }
 .scene-layer-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 46px;
-  padding: 0 12px;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
+  min-height: 50px;
+  padding: 0 10px;
+  font: 500 13px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   transition:
-    background 0.3s,
-    color 0.3s;
+    background 0.25s,
+    color 0.25s;
+}
+.scene-layer-button + .scene-layer-button {
+  border-left: 1px solid var(--line);
 }
 .scene-layer-button > span {
-  font: 11px var(--mono);
   color: var(--muted);
-  transition: color 0.3s;
+  transition: color 0.25s;
 }
 .scene-layer-button:hover {
-  background: var(--paper-2);
+  background: var(--panel-2);
 }
 .scene-layer-button.scene-selected {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--signal);
+  color: var(--bg);
 }
 .scene-layer-button.scene-selected > span {
-  color: var(--accent-soft);
+  color: var(--bg);
 }
 .scene-detail {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  padding: 20px 4px 16px;
-  border-bottom: 1px solid var(--line);
+  padding: 18px 16px;
+  border-top: 1px solid var(--line);
 }
 .scene-detail-title {
-  font-family: var(--display);
   font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-weight: 650;
+  letter-spacing: -0.04em;
 }
 .scene-detail-copy {
   margin-top: 6px;
   font-size: 15px;
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: var(--text-soft);
   max-width: 420px;
 }
 .scene-detail > svg {
-  color: var(--accent);
+  color: var(--signal);
 }
 .scene-trace-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 14px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
 }
 .scene-trace-button {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   min-height: 44px;
-  padding: 0 18px;
-  border: 1px solid var(--ink);
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  font: 500 12.5px var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   transition:
     background 0.25s,
     color 0.25s;
 }
 .scene-trace-button:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--signal);
+  color: var(--bg);
 }
 .scene-trace-button:disabled {
   opacity: 0.6;
@@ -323,6 +319,11 @@
   text-align: right;
 }
 
+@keyframes scene-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 @keyframes scene-float {
   0%,
   100% {
@@ -378,7 +379,7 @@
 @keyframes scene-blink {
   0%,
   100% {
-    opacity: 0.2;
+    opacity: 0.25;
   }
   50% {
     opacity: 1;
@@ -390,7 +391,7 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(0.9);
+    transform: scale(0.88);
   }
 }
 
@@ -399,9 +400,9 @@
     display: none;
   }
   .scene-layer-button {
-    font-size: 13px;
+    font-size: 11.5px;
     gap: 6px;
-    padding: 0 6px;
+    padding: 0 4px;
   }
   .scene-trace-row {
     flex-wrap: wrap;

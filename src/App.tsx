@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ArrowDownRight, ArrowUpRight, Menu, X } from 'lucide-react'
 import { profile, projects } from './content'
 import type { Project } from './content'
@@ -55,7 +56,7 @@ function Navigation() {
       <a className="brand" href="#top" aria-label="Mossab Laribi, home">
         <Logo />
         <span className="brand-name">
-          Mossab Laribi<span>FULL STACK · INSIDE OUT</span>
+          Mossab Laribi<span>~/portfolio $ ./run --night</span>
         </span>
       </a>
       <button
@@ -137,7 +138,7 @@ function Marquee() {
             <span key={`${item}-${index}`}>
               {item}
               <svg viewBox="0 0 24 24" width="22" height="22">
-                <path d="M12 0c.8 6.4 5.6 11.2 12 12-6.4.8-11.2 5.6-12 12-.8-6.4-5.6-11.2-12-12C6.4 11.2 11.2 6.4 12 0z" />
+                <rect x="8" y="8" width="8" height="8" />
               </svg>
             </span>
           ))}
@@ -147,26 +148,72 @@ function Marquee() {
   )
 }
 
-function HeadlineMark() {
+// A short "boot sequence" that types itself above the headline. Decorative:
+// the same information is available in the stack section below.
+const bootLines = [
+  ['OK', 'mount /interface', 'react'],
+  ['OK', 'bind  /logic', 'nestjs'],
+  ['OK', 'link  /data', 'postgresql'],
+]
+
+function BootLog() {
   return (
-    <svg className="headline-mark" viewBox="0 0 120 120" aria-hidden="true">
-      <circle
-        className="headline-mark-ring"
-        cx="60"
-        cy="60"
-        r="56"
-        fill="none"
-        strokeWidth="2"
-        strokeDasharray="3 7"
-      />
-      <path
-        d="M38 82 82 38M46 38h36v36"
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <div className="boot-log" aria-hidden="true">
+      {bootLines.map(([status, path, tool], index) => (
+        <span
+          key={path}
+          className="boot-line"
+          style={{ '--line': index } as CSSProperties}
+        >
+          <b>[ {status} ]</b> {path} <i /> {tool}
+        </span>
+      ))}
+      <span
+        className="boot-line boot-line-final"
+        style={{ '--line': 3 } as CSSProperties}
+      >
+        <b>[ ▲▲ ]</b> all layers connected
+        <span className="caret" />
+      </span>
+    </div>
+  )
+}
+
+function Telemetry() {
+  return (
+    <div className="telemetry" aria-hidden="true">
+      <div>
+        <span>CH.01 INTERFACE</span>
+        <svg viewBox="0 0 120 28" width="120" height="28">
+          {[0, 1, 2, 3, 4, 5].map((bar) => (
+            <rect
+              key={bar}
+              className="telemetry-bar"
+              x={bar * 14}
+              y="0"
+              width="8"
+              height="28"
+              style={{ animationDelay: `${-bar * 0.23}s` }}
+            />
+          ))}
+        </svg>
+      </div>
+      <div>
+        <span>CH.02 LOGIC</span>
+        <svg viewBox="0 0 120 28" width="120" height="28">
+          <path
+            className="telemetry-pulse"
+            d="M0 14 L12 14 L18 2 L26 26 L32 14 L60 14 L66 6 L72 22 L78 14 L120 14"
+          />
+        </svg>
+      </div>
+      <div>
+        <span>CH.03 DATA</span>
+        <strong>
+          SYNC <i />
+        </strong>
+      </div>
+    </div>
   )
 }
 
@@ -187,13 +234,16 @@ export default function App() {
               <span className="small-dot is-live" />{' '}
               {profile.role.toUpperCase()}
             </span>
-            <span className="mono hero-edition">PORTFOLIO / VOL. 02</span>
+            <span className="mono hero-edition">
+              BUILD: PORTFOLIO / VOL. 02
+            </span>
             <span className="mono hero-edition hero-axis">
               INTERFACE ↔ SYSTEM ↔ DATA
             </span>
           </div>
           <div className="hero-grid">
             <div className="hero-copy">
+              <BootLog />
               <h1 id="hero-title">
                 <span className="hero-line">
                   <span>Built from</span>
@@ -202,9 +252,8 @@ export default function App() {
                   <span>the inside</span>
                 </span>
                 <span className="hero-line">
-                  <span className="hero-line-last">
+                  <span>
                     <em>out.</em>
-                    <HeadlineMark />
                   </span>
                 </span>
               </h1>
@@ -220,6 +269,7 @@ export default function App() {
                   Let’s build something <ArrowUpRight size={17} />
                 </a>
               </div>
+              <Telemetry />
             </div>
             <div className="hero-visual">
               <SignatureScene />

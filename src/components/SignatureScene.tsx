@@ -177,7 +177,7 @@ export default function SignatureScene() {
         <span>
           <i /> INTERACTIVE SYSTEM
         </span>
-        <span>FIG. 01 — EXPLODED VIEW</span>
+        <span>FIG. 01 // STACK.SCAN</span>
       </div>
       <div
         className={`scene-visual${isTracing ? ' scene-is-tracing' : ''}`}
@@ -203,32 +203,46 @@ export default function SignatureScene() {
                 y="5"
                 width="22"
                 height="22"
-                rx="3"
                 fill="none"
-                stroke="#1c1f1b"
+                stroke="#ff5a1f"
+                strokeOpacity=".55"
                 strokeWidth="1.1"
               />
             </pattern>
-            <pattern
-              id="scene-dots"
-              width="16"
-              height="16"
-              patternUnits="userSpaceOnUse"
+            <radialGradient id="scene-sweep" cx="0" cy="1" r="1">
+              <stop offset="0" stopColor="#c8ff2e" stopOpacity="0" />
+              <stop offset="1" stopColor="#c8ff2e" stopOpacity=".2" />
+            </radialGradient>
+            <filter
+              id="scene-glow"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
             >
-              <circle cx="2" cy="2" r="1.1" fill="#1c1f1b" opacity=".22" />
-            </pattern>
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
-          <rect width="680" height="620" fill="url(#scene-dots)" />
-          <ellipse
-            className="scene-orbit"
-            cx="300"
-            cy="320"
-            rx="290"
-            ry="168"
-          />
+          {/* radar backdrop */}
+          <g className="scene-radar">
+            <circle cx="300" cy="310" r="290" />
+            <circle cx="300" cy="310" r="210" />
+            <circle cx="300" cy="310" r="130" strokeDasharray="2 6" />
+            <path d="M10 310H590M300 20V600" />
+          </g>
+          <g className="scene-sweep">
+            <path
+              d="M300 310 L300 20 A290 290 0 0 1 505 105 Z"
+              fill="url(#scene-sweep)"
+            />
+          </g>
           <path
             className="scene-crosshair"
-            d="M12 22h16M20 14v16M640 590h16M648 582v16M640 22h16M648 14v16"
+            d="M8 8h24M8 8v24M672 8h-24M672 8v24M8 612h24M8 612v-24M672 612h-24M672 612v-24"
           />
 
           <line className="scene-beam" x1="100" y1="154" x2="100" y2="460" />
